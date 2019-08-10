@@ -1,4 +1,3 @@
-@[TOC](目录)
 # 索引的那些事儿
 ### 1.1 简介
 &emsp;索引是为了加速对表中的数据行的检索而创造的一种分散存储的数据结构，索引（index）也叫做键（key）
@@ -26,9 +25,12 @@
 **最左前缀原则（了解）**
 &emsp;最左前缀原则指的是，如果查询的时候查询条件精确匹配索引的左边连续一列或几列，则此列就可以被用到。如下：
 
-&emsp;select * from user where name=xx and city=xx ; ／／可以命中索引
+&emsp;select * from user where name=xx and city=xx ; //可以命中索引
+
 &emsp;select * from user where name=xx ; // 可以命中索引
+
 &emsp;select * from user where city=xx ; // 无法命中索引 
+
 
 &emsp;这里需要注意的是，查询的时候如果两个条件都用上了，但是顺序不同，如 city= xx and name ＝xx，那么现在的查询引擎会自动优化为匹配联合索引的顺序，这样是能够命中索引的。
 
@@ -40,6 +42,7 @@
 ### 1.4 索引的实现
 &emsp;mysql的索引是由存储引擎来实现，不同的存储引擎实现方式不同。
 &emsp;mysql官方文档给出的不同存储引擎对索引的支持
+
 | 存储引擎 |  支持的索引类型 |
 |--|--|
 | InnoDB	 | BTREE |
@@ -55,16 +58,24 @@
 
 #### 1.4.1 B+树 索引
 为什么选择B+树而不是其他数据结构？
-&emsp;**二叉树**：普通的二叉树不是绝对平衡的，它有可能会形成一个链表，这样就失去了二叉树的优势，需要遍历查找，性能查。
+&emsp;**二叉树**：普通的二叉树不是绝对平衡的，它有可能会形成一个链表，这样就失去了二叉树的优势，需要遍历查找，效率低。
+
 ![二叉树](https://img-blog.csdnimg.cn/20190705104519836.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2tleV9hcnRpc3Q=,size_16,color_FFFFFF,t_70)
+
 &emsp;**平衡二叉树**：平衡二叉树如果在数据量很大的情况下，这棵树的高度很可能成千上万，因此它的IO次数也会很频繁，会严重影响性能。每一个节点保存的数据量太小，没有利用好操作磁盘IO的数据交换特性（4K）。
+
 ![平衡二叉树](https://img-blog.csdnimg.cn/20190705104706229.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2tleV9hcnRpc3Q=,size_16,color_FFFFFF,t_70)
+
 &emsp;**注**：操作系统磁盘IO的数据交换一次默认是4KB大小，但是我们的节点里面存储的数据远远小于4KB，即我们进行了一次IO但是没有完全利用这次IO的数据交换大小，造成浪费。
  
 &emsp;**B-树**：下图是一个3路的平衡查找树（即一个节点最多可以有3-1=2个元素）,可以看出同样的高度，它比平衡二叉树存储的数据多得多，减少了IO次数，同时每次IO获取的数据也更多，提升了IO效率。
+
 ![B-树](https://img-blog.csdnimg.cn/20190705104755566.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2tleV9hcnRpc3Q=,size_16,color_FFFFFF,t_70)
+
 &emsp;**B+树**：
+
 ![B+树](https://img-blog.csdnimg.cn/20190705104820972.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2tleV9hcnRpc3Q=,size_16,color_FFFFFF,t_70)
+
 B+树(加强版多路平衡查找树)有以下几个特点：
 &emsp;采用闭合区间
 &emsp;非叶子节点不保存数据，只保存关键字和子节点的引用
@@ -86,15 +97,19 @@ B+树(加强版多路平衡查找树)有以下几个特点：
 
 **存储引擎中的B树实现**
 &emsp;**Myisam**
+
 ![Myisam中的B树实现](https://img-blog.csdnimg.cn/20190705104857941.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2tleV9hcnRpc3Q=,size_16,color_FFFFFF,t_70)
+
 &emsp;非聚簇索引，数据和索引分别存储。
 &emsp;索引文件xx.MYI
 &emsp;数据文件xx.MYD
 &emsp;叶子节点保存的是引用地址而非数据
 
 &emsp;**InnoDB**
+ 
  ![](https://img-blog.csdnimg.cn/20190727163617772.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2tleV9hcnRpc3Q=,size_16,color_FFFFFF,t_70)
-&emsp;聚簇索引，数据和索引保存在一起
+
+ &emsp;聚簇索引，数据和索引保存在一起
 &emsp;文件xx.ibd
 &emsp;在叶子节点保存对应的所有数据
 &emsp;以主键索引来组织数据，没有主键的话，会帮我们隐式创建主键索引
@@ -138,7 +153,9 @@ B+树(加强版多路平衡查找树)有以下几个特点：
 
 #### 1.4.2 哈希索引
 &emsp;哈希索引是采用一定的哈希算法，把键值换算成新的哈希值，检索时不需要类似B+树那样从根节点到叶子节点逐级查找，只需一次哈希算法即可立刻定位到相应的位置，速度非常快。
+
 ![哈希索引](https://img-blog.csdnimg.cn/20190705105039301.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2tleV9hcnRpc3Q=,size_16,color_FFFFFF,t_70)
+
 从上面的图来看，B+树索引和哈希索引的明显区别是：
 
 &emsp;如果是等值查询，那么哈希索引明显有绝对优势，因为只需要经过一次算法即可找到相应的键值；当然了，这个前提是，键值都是唯一的。如果键值不是唯一的，就需要先找到该键所在位置，然后再根据链表往后扫描，直到找到相应的数据；
