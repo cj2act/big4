@@ -107,9 +107,9 @@ B+树(加强版多路平衡查找树)有以下几个特点：
 
 &emsp;**InnoDB**
  
- ![](https://img-blog.csdnimg.cn/20190727163617772.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2tleV9hcnRpc3Q=,size_16,color_FFFFFF,t_70)
+![](https://img-blog.csdnimg.cn/20190727163617772.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2tleV9hcnRpc3Q=,size_16,color_FFFFFF,t_70)
 
- &emsp;聚簇索引，数据和索引保存在一起
+&emsp;聚簇索引，数据和索引保存在一起
 &emsp;文件xx.ibd
 &emsp;在叶子节点保存对应的所有数据
 &emsp;以主键索引来组织数据，没有主键的话，会帮我们隐式创建主键索引
